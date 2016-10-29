@@ -1,4 +1,4 @@
-package example.com.tmdb.data.source;
+package org.natuan.tmdb.data.source;
 
 import org.natuan.asynchttpclient.Error;
 

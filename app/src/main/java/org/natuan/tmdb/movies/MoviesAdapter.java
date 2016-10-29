@@ -1,16 +1,19 @@
-package example.com.tmdb.movies;
+package org.natuan.tmdb.movies;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.natuan.tmdb.R;
+import org.natuan.tmdb.data.model.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import example.com.tmdb.R;
-import example.com.tmdb.data.model.Movie;
+import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.
@@ -23,10 +26,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     public MoviesAdapter() {
     }
 
-    public void initData(List<Movie> movies) {
-        if (movies == null || movies.size() == 0) return;
-        if (this.mMovies != null) this.mMovies.clear();
-        this.mMovies = movies;
+    public void initData(@NonNull List<Movie> movies) {
+        checkNotNull(movies);
+        mMovies = movies;
         notifyDataSetChanged();
     }
 

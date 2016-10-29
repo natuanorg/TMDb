@@ -1,4 +1,4 @@
-package example.com.tmdb;
+package org.natuan.tmdb;
 
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.

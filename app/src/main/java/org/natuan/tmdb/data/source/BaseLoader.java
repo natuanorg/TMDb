@@ -1,4 +1,4 @@
-package example.com.tmdb.data.source;
+package org.natuan.tmdb.data.source;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -8,28 +8,28 @@ import org.natuan.asynchttpclient.AsyncHttpClient;
 import org.natuan.asynchttpclient.AsyncHttpClientImpl;
 import org.natuan.asynchttpclient.HTTPRequest;
 import org.natuan.asynchttpclient.JsonResponseHandler;
-
-import example.com.tmdb.util.Logger;
+import org.natuan.tmdb.util.Logger;
 
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.
  * natuan.org@gmail.com
  */
-abstract class BaseLoader<T> extends Loader<DataHolder> {
+abstract class BaseLoader<T> extends Loader<T> {
 
     protected AsyncTask mAsyncTask;
-    protected DataHolder<T> mDataHolder;
+    protected T mDataHolder;
 
     public BaseLoader(Context context) {
         super(context);
-        onContentChanged();
     }
 
     @Override
     protected void onStartLoading() {
         Logger.enter();
-        super.onStartLoading();
-        if (takeContentChanged()) {
+        if (mDataHolder != null) {
+            deliverResult(mDataHolder);
+        }
+        if (takeContentChanged() || mDataHolder == null) {
             forceLoad();
         }
         Logger.exit();
@@ -42,7 +42,22 @@ abstract class BaseLoader<T> extends Loader<DataHolder> {
                 && !mAsyncTask.isCancelled()) {
             mAsyncTask.cancel(true);
         }
-        super.onStopLoading();
+        Logger.exit();
+    }
+
+    @Override
+    public void deliverResult(T data) {
+        Logger.enter();
+        if (isReset()) {
+            if (mDataHolder != null) {
+                mDataHolder = null;
+                return;
+            }
+        }
+        mDataHolder = data;
+        if (isStarted()) {
+            super.deliverResult(data);
+        }
         Logger.exit();
     }
 
@@ -60,7 +75,6 @@ abstract class BaseLoader<T> extends Loader<DataHolder> {
     @Override
     protected void onForceLoad() {
         Logger.enter();
-        super.onForceLoad();
         doRequest();
         Logger.exit();
     }

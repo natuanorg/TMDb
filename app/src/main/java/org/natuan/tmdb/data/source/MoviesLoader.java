@@ -1,4 +1,4 @@
-package example.com.tmdb.data.source;
+package org.natuan.tmdb.data.source;
 
 import android.content.Context;
 
@@ -6,8 +6,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.natuan.asynchttpclient.Error;
 import org.natuan.asynchttpclient.JsonResponseHandler;
-
-import example.com.tmdb.data.model.MoviesResponse;
+import org.natuan.tmdb.data.model.MoviesResponse;
 
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.
@@ -20,6 +19,31 @@ public class MoviesLoader extends BaseLoader<MoviesResponse> {
     }
 
     @Override
+    protected void onStartLoading() {
+        super.onStartLoading();
+    }
+
+    @Override
+    public void deliverResult(MoviesResponse data) {
+        super.deliverResult(data);
+    }
+
+    @Override
+    protected void onStopLoading() {
+        super.onStopLoading();
+    }
+
+    @Override
+    protected void onReset() {
+        super.onReset();
+    }
+
+    @Override
+    protected void onForceLoad() {
+        super.onForceLoad();
+    }
+
+    @Override
     public JsonResponseHandler getResponseHandler() {
         return new JsonResponseHandler<MoviesResponse, Error>(
                 new TypeToken<MoviesResponse>(){}.getType(),
@@ -27,20 +51,17 @@ public class MoviesLoader extends BaseLoader<MoviesResponse> {
             ) {
                 @Override
                 public void onSuccess(MoviesResponse response) {
-                    mDataHolder = new DataHolder<>(response, null, null);
-                    deliverResult(mDataHolder);
+                    deliverResult(response);
                 }
 
                 @Override
                 public void onFailure(Error response) {
-                    mDataHolder = new DataHolder<>(null, response, null);
-                    deliverResult(mDataHolder);
+                    deliverResult(null);
                 }
 
                 @Override
                 public void onError(Throwable error) {
-                    mDataHolder = new DataHolder<>(null, null, error);
-                    deliverResult(mDataHolder);
+                    deliverResult(null);
                 }
             };
     }

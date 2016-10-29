@@ -6,8 +6,8 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     defaultConfig {
-        applicationId "example.com.tmdb"
-        minSdkVersion 19
+        applicationId "org.natuan.tmdb"
+        minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"

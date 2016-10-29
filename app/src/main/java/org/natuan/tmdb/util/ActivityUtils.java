@@ -1,4 +1,4 @@
-package example.com.tmdb.util;
+package org.natuan.tmdb.util;
 
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;

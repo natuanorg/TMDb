@@ -1,9 +1,11 @@
-package example.com.tmdb.data.source;
+package org.natuan.tmdb.data.source;
 
 import android.net.Uri;
+
+import org.natuan.tmdb.BuildConfig;
+
 import java.util.HashMap;
 
-import example.com.tmdb.BuildConfig;
 
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.

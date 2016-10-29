@@ -1,10 +1,11 @@
-package example.com.tmdb;
+package org.natuan.tmdb;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import example.com.tmdb.movies.MoviesFragment;
-import example.com.tmdb.util.ActivityUtils;
+import org.natuan.tmdb.movies.MoviesFragment;
+import org.natuan.tmdb.util.ActivityUtils;
+
 /**
  * Created by Nguyen Anh Tuan on 26/10/2016.
  * natuan.org@gmail.com

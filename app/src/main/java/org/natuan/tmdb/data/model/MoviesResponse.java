@@ -1,4 +1,4 @@
-package example.com.tmdb.data.model;
+package org.natuan.tmdb.data.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

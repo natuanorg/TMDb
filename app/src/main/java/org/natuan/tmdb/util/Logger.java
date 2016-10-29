@@ -1,4 +1,4 @@
-package example.com.tmdb.util;
+package org.natuan.tmdb.util;
 
 import android.util.Log;
 
