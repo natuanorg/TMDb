@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface MoviesView {
     void showMovies(List<Movie> movies);
+
+    void showMoreMovies(List<Movie> movies);
 }

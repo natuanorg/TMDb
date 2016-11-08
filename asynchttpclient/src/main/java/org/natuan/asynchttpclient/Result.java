@@ -7,4 +7,28 @@ package org.natuan.asynchttpclient;
 public class Result<T> {
     public T obj;
     public Throwable error;
+
+    public Result() {
+    }
+
+    public Result(T obj, Throwable error) {
+        this.obj = obj;
+        this.error = error;
+    }
+
+    public T getObj() {
+        return obj;
+    }
+
+    public void setObj(T obj) {
+        this.obj = obj;
+    }
+
+    public Throwable getError() {
+        return error;
+    }
+
+    public void setError(Throwable error) {
+        this.error = error;
+    }
 }

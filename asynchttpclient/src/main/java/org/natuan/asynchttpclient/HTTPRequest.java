@@ -27,6 +27,7 @@ public class HTTPRequest {
     final int mReadTimeout;
     final int mConnectTimeout;
     final SSLOptions mSSslOptions;
+    final HTTPProxy mProxy;
 
     public HTTPRequest(Builder builder) {
         this.mVerb = toString(builder.mVerb);
@@ -37,6 +38,7 @@ public class HTTPRequest {
         this.mReadTimeout = builder.mRealTimeout;
         this.mConnectTimeout = builder.mConnectTimeout;
         this.mSSslOptions = builder.mSSLOptions;
+        this.mProxy = builder.mProxy;
     }
 
     String toString(Verb verb) {
@@ -65,6 +67,7 @@ public class HTTPRequest {
         private int mRealTimeout;
         private int mConnectTimeout;
         private SSLOptions mSSLOptions = null;
+        private HTTPProxy mProxy = null;
 
         public Builder setVerb(Verb verb) {
             this.mVerb = verb;
@@ -93,6 +96,11 @@ public class HTTPRequest {
 
         public Builder setSSLOptions(SSLOptions sslOptions) {
             this.mSSLOptions = sslOptions;
+            return this;
+        }
+
+        public Builder setProxy(HTTPProxy proxy) {
+            this.mProxy = proxy;
             return this;
         }
 

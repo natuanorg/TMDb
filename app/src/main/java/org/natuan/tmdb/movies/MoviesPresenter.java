@@ -19,9 +19,10 @@ import java.util.List;
  */
 
 class MoviesPresenter implements Presenter<MoviesView>,
-        LoaderManager.LoaderCallbacks<MoviesResponse>{
+        LoaderManager.LoaderCallbacks<MoviesResponse> {
 
-    private final int DATA_LOADER = 102;
+    private static final int MOVIES_REQUEST = 1992;
+    private static final String KEY_LOAD_MORE = "is_load_more";
     private MoviesView moviesView;
     private MoviesLoader mMoviesLoader;
     private LoaderManager mLoaderManager;
@@ -36,8 +37,17 @@ class MoviesPresenter implements Presenter<MoviesView>,
     public void onViewAttached(MoviesView view) {
         Logger.enter();
         this.moviesView = view;
-        mLoaderManager.initLoader(DATA_LOADER, null, this);
+        loadMovies(false);
         Logger.exit();
+    }
+
+    public void loadMovies(boolean isLoadMore) {
+        if (!isLoadMore) {
+            mLoaderManager.initLoader(MOVIES_REQUEST, null, this);
+        } else {
+            mMoviesLoader.setLoadMore(true);
+            mMoviesLoader.onContentChanged();
+        }
     }
 
     @Override
@@ -56,19 +66,35 @@ class MoviesPresenter implements Presenter<MoviesView>,
 
     @Override
     public Loader<MoviesResponse> onCreateLoader(int id, Bundle args) {
+        Logger.enter();
+        if (args != null) {
+            boolean isLoadMore = args.getBoolean(KEY_LOAD_MORE, false);
+            mMoviesLoader.setLoadMore(isLoadMore);
+        }
+        Logger.exit();
         return mMoviesLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<MoviesResponse> loader, MoviesResponse data) {
-        if (data != null) {
+        Logger.enter();
+        if (data != null && data.getMovies().size() > 0) {
             List<Movie> movieList = data.getMovies();
-            this.moviesView.showMovies(movieList);
+            if (mMoviesLoader != null && moviesView != null) {
+                if (mMoviesLoader.isLoadMore()) {
+                    this.moviesView.showMoreMovies(movieList);
+                    mMoviesLoader.setLoadMore(false);
+                } else {
+                    this.moviesView.showMovies(movieList);
+                }
+            }
         }
+        Logger.exit();
     }
 
     @Override
     public void onLoaderReset(Loader<MoviesResponse> loader) {
-
+        Logger.enter();
+        Logger.exit();
     }
 }

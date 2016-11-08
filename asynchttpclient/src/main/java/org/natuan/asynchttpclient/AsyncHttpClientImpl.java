@@ -4,20 +4,25 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Nguyen Anh Tuan on 15/10/2016.
  * natuan.org@gmail.com
  */
-public class AsyncHttpClientImpl implements AsyncHttpClient{
+public class AsyncHttpClientImpl<T> implements AsyncHttpClient {
 
     @Override
     public AsyncTask excuteAsync(HTTPRequest request, ResponseHandler handler) {
@@ -26,10 +31,14 @@ public class AsyncHttpClientImpl implements AsyncHttpClient{
     }
 
     @Override
-    public Result<HTTPResponse> excuteSync(HTTPRequest request) {
+    public T excuteSync(HTTPRequest request, Class clazz) {
         try {
-            return new HTTPAsyncTask()
+            Result<HTTPResponse> result = new HTTPAsyncTask()
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request).get();
+            if (result.error == null) {
+                return new JsonResponseConverter<T>()
+                        .convert(result.obj, clazz);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -73,9 +82,31 @@ public class AsyncHttpClientImpl implements AsyncHttpClient{
             }
         }
 
-        HttpURLConnection initConnection(URL url) throws IOException {
+        HttpURLConnection setupProxyConnection(URL url,HTTPProxy httpProxy) throws IOException {
+            HttpsURLConnection con = null;
+
+            Proxy proxy = new Proxy( httpProxy.mType.toType(),
+                    new InetSocketAddress(httpProxy.mHost,
+                            httpProxy.mPort));
+
+            con =  (HttpsURLConnection) url.openConnection(proxy);
+
+            if ( httpProxy.mUsername !=  null ) {
+                String authString = httpProxy.mUsername + ":" + httpProxy.mPassword;
+                String encoded = Base64.encodeToString(authString.getBytes(), 0);
+                con.setRequestProperty("Proxy-Authorization", "Basic " + encoded);
+            }
+            return con;
+        }
+
+        HttpURLConnection initConnection(HTTPRequest request, URL url) throws IOException {
             HttpURLConnection result;
-            result = (HttpURLConnection) url.openConnection();
+            HTTPProxy httpProxy = request.mProxy;
+            if (httpProxy != null) {
+                result = setupProxyConnection(url, httpProxy);
+            } else {
+                result = (HttpURLConnection) url.openConnection();
+            }
             return result;
         }
 
@@ -90,7 +121,7 @@ public class AsyncHttpClientImpl implements AsyncHttpClient{
                 //Retrieve the request URL from the request object.
                 URL url = new URL(request.mUrl);
                 //Open the connection to the remote
-                conn = initConnection(url);
+                conn = initConnection(request, url);
                 //Set read timeout.
                 conn.setReadTimeout(request.mReadTimeout);
                 //Set connect timeout.
@@ -128,12 +159,12 @@ public class AsyncHttpClientImpl implements AsyncHttpClient{
 
         @Override
         protected void onPostExecute(Result<HTTPResponse> result) {
-            if (result.error != null) {
-                mHandler.onError(result.error);
-            } else if (result.obj.mResponseCode == HttpURLConnection.HTTP_OK) {
-                mHandler.onSuccess(result.obj);
-            } else {
-                mHandler.onFailure(result.obj);
+            if (mHandler != null) {
+                if (result.error != null) {
+                    mHandler.onError(result.error);
+                } else {
+                    mHandler.onSuccess(result.obj);
+                }
             }
         }
     }

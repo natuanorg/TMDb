@@ -1,23 +1,14 @@
 package org.natuan.asynchttpclient;
 
-import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Created by Nguyen Anh Tuan on 15/10/2016.
  * natuan.org@gmail.com
  */
-public abstract class JsonResponseHandler<ResponseType, ErrorType> extends ResponseHandler {
-    private final Type responseType;
-    private final Type errorType;
-
-    public JsonResponseHandler(Type responseType, Type errorType) {
-        this.responseType = responseType;
-        this.errorType = errorType;
-    }
+public abstract class JsonResponseHandler<ResponseType> extends ResponseHandler {
 
     abstract public void onSuccess(ResponseType response);
-
-    abstract public void onFailure(ErrorType response);
 
     @Override
     public void onSuccess(HTTPResponse response) {
@@ -25,7 +16,8 @@ public abstract class JsonResponseHandler<ResponseType, ErrorType> extends Respo
         if (body != null) {
             ResponseType obj = null;
             try {
-                obj = new JSONConverter<ResponseType>(responseType).decode(body);
+                obj = new JSONConverter<ResponseType>()
+                        .decode(body, new TypeToken<ResponseType>(){}.getType());
                 onSuccess(obj);
             } catch (Exception e) {
                 onError(e);
@@ -35,19 +27,5 @@ public abstract class JsonResponseHandler<ResponseType, ErrorType> extends Respo
         }
     }
 
-    @Override
-    public void onFailure(HTTPResponse response) {
-        RawBody body = (RawBody) response.mBody;
-        if (body != null) {
-            ErrorType obj = null;
-            try {
-                obj = new JSONConverter<ErrorType>(errorType).decode(body);
-                onFailure(obj);
-            } catch (Exception e) {
-                onError(e);
-            }
-        } else {
-            onFailure((ErrorType) null);
-        }
-    }
+
 }

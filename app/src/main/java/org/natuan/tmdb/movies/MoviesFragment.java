@@ -15,6 +15,7 @@ import org.natuan.tmdb.base.BasePresenterFragment;
 import org.natuan.tmdb.base.PresenterFactory;
 import org.natuan.tmdb.data.model.Movie;
 import org.natuan.tmdb.data.source.MoviesLoader;
+import org.natuan.tmdb.util.EndlessRecyclerViewScrollListener;
 import org.natuan.tmdb.util.Logger;
 
 import java.util.List;
@@ -61,9 +62,17 @@ public class MoviesFragment extends BasePresenterFragment<MoviesPresenter, Movie
 
     private void setupRececlerView() {
         mRv.setHasFixedSize(true);
-        mRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new MoviesAdapter();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRv.setLayoutManager(linearLayoutManager);
+        mAdapter = new MoviesAdapter(getContext());
         mRv.setAdapter(mAdapter);
+        mRv.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Logger.d("onLoadMore");
+                mMoviesPresenter.loadMovies(true);
+            }
+        });
     }
 
     @Override
@@ -112,6 +121,13 @@ public class MoviesFragment extends BasePresenterFragment<MoviesPresenter, Movie
     public void showMovies(List<Movie> movies) {
         Logger.enter();
         mAdapter.initData(movies);
+        Logger.exit();
+    }
+
+    @Override
+    public void showMoreMovies(List<Movie> movies) {
+        Logger.enter();
+        mAdapter.updateData(movies);
         Logger.exit();
     }
 }

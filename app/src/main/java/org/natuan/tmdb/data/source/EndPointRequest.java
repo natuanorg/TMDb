@@ -18,7 +18,7 @@ public class EndPointRequest {
     public static final String MOVIE_POPULAR = "movie/popular";
     public static final String LANGUAGE = "language";
     public static final String LANGUAGE_EN_US = "en-US";
-
+    public static final String PAGE = "page";
 
     final String mSourceType;
     final HashMap<String, String> mParameters;
@@ -49,8 +49,9 @@ public class EndPointRequest {
 
     public String getUrl() {
         Uri.Builder uriBuilder = Uri.parse(TMDB_BASE_URL).buildUpon();
-        uriBuilder.appendEncodedPath(MOVIE_POPULAR);
+        uriBuilder.appendEncodedPath(mSourceType);
         uriBuilder.appendQueryParameter(APIKEY, BuildConfig.TMDB_API_KEY);
+        uriBuilder.appendQueryParameter(LANGUAGE, LANGUAGE_EN_US);
         if (mParameters != null && mParameters.size() > 0) {
             for (String key:
                  mParameters.keySet()) {

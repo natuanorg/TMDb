@@ -14,14 +14,8 @@ import java.lang.reflect.Type;
  */
 public class JSONConverter<POJO> implements BodyEncoder<POJO>, BodyDecoder<POJO> {
 
-    private final Type pojpType;
-
-    public JSONConverter(Type pojpType) {
-        this.pojpType = pojpType;
-    }
-
     @Override
-    public POJO decode(Body body) throws Exception {
+    public POJO decode(Body body, Type type) throws Exception {
         Gson gson = new Gson();
         RawBody rawBody = (RawBody) body;
         InputStream is = null;
@@ -29,7 +23,26 @@ public class JSONConverter<POJO> implements BodyEncoder<POJO>, BodyDecoder<POJO>
         try {
             is = new ByteArrayInputStream(rawBody.getContent());
             BufferedReader bfReader = new BufferedReader(new InputStreamReader(is));
-            ojb = gson.fromJson(bfReader, pojpType);
+            ojb = gson.fromJson(bfReader, type);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+
+        return ojb;
+    }
+
+    @Override
+    public POJO decode(Body body, Class<POJO> clazz) throws Exception {
+        Gson gson = new Gson();
+        RawBody rawBody = (RawBody) body;
+        InputStream is = null;
+        POJO ojb = null;
+        try {
+            is = new ByteArrayInputStream(rawBody.getContent());
+            BufferedReader bfReader = new BufferedReader(new InputStreamReader(is));
+            ojb = gson.fromJson(bfReader, clazz);
         } finally {
             if (is != null) {
                 is.close();
